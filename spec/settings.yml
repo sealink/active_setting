@@ -1,0 +1,8 @@
+---
+settings:
+  general_category:
+    maximum_percent:
+      default: 50
+      type: integer
+      description: The minimum percentage to pass
+
