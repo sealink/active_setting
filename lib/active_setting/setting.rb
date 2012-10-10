@@ -1,6 +1,8 @@
+require 'bigdecimal'
+
 module ActiveSetting
   class Setting # < ActiveRecord::Base
-    attr_accessor :name, :data_type, :subtype, :options, :description, :exists, :category, :raw_value
+    attr_accessor :name, :data_type, :subtype, :options, :description, :exists, :category, :raw_value, :default
 
     def initialize(attr = {})
       attr.each do |key,value|
@@ -9,38 +11,34 @@ module ActiveSetting
       end
     end
 
-    def self.config_filename
-      @@config_filename || "settings.yml"
+    def self.register(name, options)
+      self.new(options.merge(:name => name)).register
     end
 
-    def self.config_filename=(filename)
-      @@config_filename = filename
+    def register
+      @@registered_settings ||= {}
+      @@registered_settings[name.to_sym] = self
+      Setting.define_shortcut_method(self)
+      self
     end
 
-    def self.settings_config
-      raise FileNotFound, "#{config_filename} is required for settings" unless File.exists? config_filename
-      yaml = YAML::load(File.read(config_filename))
-      yaml['settings']
-    end
-
-    def self.settings_hash
-      @@settings_hash ||= begin
-        isettings = {}
-        settings_config.each do |category_name, settings|
-          settings.each do |setting_name, values|
-            isettings[setting_name.to_sym] = values.merge(
-              :data_type => values['type'],
-              :category => category_name,
-              :name => setting_name
-            )
-          end
+    def self.define_shortcut_method(setting)
+      class_eval <<-TEXT 
+        def self.#{setting.name}
+          @@registered_settings[:#{setting.name}].value
         end
-        isettings
-      end
+        def self.#{setting.name}=(value)
+          @@registered_settings[:#{setting.name}].raw_value = value
+        end
+      TEXT
+    end
+
+    def self.registered_settings
+      @@registered_settings
     end
 
     def setting
-      self.class.settings_hash[@name.to_sym]
+      @@registered_settings[@name.to_sym]
     end
 
     def data_type
@@ -76,30 +74,32 @@ module ActiveSetting
     end
 
     def value
+      v = raw_value || default
+
       # TODO: WHY IS the first line here
-      return nil if raw_value.nil?
+      return nil if v.nil?
 
       case data_type
       when :array
-        YAML::load(raw_value)
+        YAML::load(v)
       when :hash
-        chunks = raw_value.split(',')
-        chunks.inject({}) do |h, v|
-          key, subval = v.split(':')
+        chunks = v.split(',')
+        chunks.inject({}) do |h, val|
+          key, subval = val.split(':')
           h[key.strip.to_sym] = subval.strip
           h
         end
       when :csv
-        return raw_value if raw_value.empty? # e.g. default = []
-        raw_value.split(',').map(&:strip).map{|e| Setting.convert_value(e, subtype) }
+        return v if v.empty? # e.g. default = []
+        v.split(',').map(&:strip).map{|e| Setting.convert_value(e, subtype) }
       else
-        Setting.convert_value(raw_value, data_type)
+        Setting.convert_value(v, data_type)
       end
     end
 
-    def value=(newval)
-      newval = newval.join(',') if data_type == 'csv' && newval.is_a?(Array)
-      self.raw_value = newval
-    end
+    #def value=(newval)
+    #  newval = newval.join(',') if data_type == 'csv' && newval.is_a?(Array)
+    #  self.raw_value = newval
+    #end
   end
 end

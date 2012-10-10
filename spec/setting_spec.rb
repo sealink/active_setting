@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'bigdecimal'
+
 describe ActiveSetting::Setting do
   it 'should handle basic types and casting' do
     s = ActiveSetting::Setting.new(:data_type => :integer, :raw_value => '6')
@@ -38,15 +38,5 @@ describe ActiveSetting::Setting do
 
     s = ActiveSetting::Setting.new(:data_type => :hash, :raw_value => 'a:1 , b : 2')
     s.value.should == {a: '1', b: '2'}
-  end
-
-  it 'should parse a settings file to get settings' do
-    ActiveSetting::Setting.config_filename = 'spec/settings.yml'
-    hash = ActiveSetting::Setting.settings_hash
-    hash.keys.should == [:maximum_percent]
-    s = ActiveSetting::Setting.new(hash.values.first)
-    puts s.inspect
-    s.raw_value = 60
-    s.value.should == 60
   end
 end
