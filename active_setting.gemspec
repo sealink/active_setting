@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'active_setting'
   s.version           = '0.0.1'
-  s.date              = '2012-10-05'
+  s.date              = '2012-10-16'
   s.rubyforge_project = 'active_setting'
 
   ## Make sure your summary is short. The description may be as long
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   ## Specify any RDoc options here. You'll want to add your README and
   ## LICENSE files to the extra_rdoc_files list.
   s.rdoc_options = ["--charset=UTF-8"]
-  s.extra_rdoc_files = %w[README.md LICENSE]
+  s.extra_rdoc_files = %w[README.md]
 
   ## List your runtime dependencies here. Runtime dependencies are those
   ## that are needed for an end user to actually USE your code.
@@ -60,38 +60,16 @@ Gem::Specification.new do |s|
   # = MANIFEST =
   s.files = %w[
     Gemfile
-    HISTORY.md
-    LICENSE
     README.md
     Rakefile
-    lib/active_setting.rb
-    lib/active_setting/date.rb
-    lib/active_setting/date_chooser.rb
-    lib/active_setting/date_range.rb
-    lib/active_setting/date_time.rb
-    lib/active_setting/rails.rb
-    lib/active_setting/rails/date_group.rb
-    lib/active_setting/rails/extensions.rb
-    lib/active_setting/rails/season.rb
-    lib/active_setting/range.rb
-    lib/active_setting/string.rb
-    lib/active_setting/temporal_patterns.rb
-    lib/active_setting/time.rb
-    lib/active_setting/trackable_date_set.rb
-    lib/active_setting/week_days.rb
-    rails/init.rb
-    spec/date_chooser_spec.rb
-    spec/date_group_spec.rb
-    spec/date_range_spec.rb
-    spec/date_spec.rb
-    spec/schema.rb
-    spec/season_spec.rb
-    spec/spec_helper.rb
-    spec/string_spec.rb
-    spec/time_spec.rb
-    spec/trackable_date_set_spec.rb
-    spec/week_days_spec.rb
     active_setting.gemspec
+    lib/active_setting.rb
+    lib/active_setting/loader.rb
+    lib/active_setting/setting.rb
+    spec/loader_spec.rb
+    spec/setting_spec.rb
+    spec/settings.yml
+    spec/spec_helper.rb
   ]
   # = MANIFEST =
 
