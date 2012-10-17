@@ -5,4 +5,5 @@ settings:
       default: 50
       type: integer
       description: The minimum percentage to pass
-
+    difficulty:
+      options: 'easy normal hard'

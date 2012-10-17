@@ -57,8 +57,22 @@ module ActiveSetting
       @category
     end
 
+    def options=(options)
+      @options = options.split(' ')
+    end
+
+    def object_options=(oo)
+      objects, key, value = oo.split(' ')
+      value = key if value.nil? || value == ''
+      objects_from_collection(eval(objects), key, value)
+    end
+
+    def objects_from_collection(collection, key, value)
+      @options = collection.map{|o| [o.send(key), o.send(value)]}
+    end
+
     def options
-      @options || (eval(setting[:options]) if !setting[:options].blank?)
+      @options || (eval(setting.options) if setting && !setting.options.blank?)
     end
 
     def self.convert_value(val, data_type)

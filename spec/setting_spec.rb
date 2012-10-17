@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ActiveSetting::Setting do
+describe ActiveSetting::Setting, 'with types/casting' do
   it 'should handle basic types and casting' do
     s = ActiveSetting::Setting.new(:data_type => :integer, :raw_value => '6')
     s.value.should == 6
@@ -38,5 +38,20 @@ describe ActiveSetting::Setting do
 
     s = ActiveSetting::Setting.new(:data_type => :hash, :raw_value => 'a:1 , b : 2')
     s.value.should == {a: '1', b: '2'}
+  end
+end
+
+describe ActiveSetting::Setting, 'when having options' do
+  it 'should format the options in the right type' do
+    s = ActiveSetting::Setting.new(options: 'easy normal hard')
+    s.options.should == ['easy', 'normal', 'hard']
+  end
+
+  it 'should format the options by key,value when object options' do
+    first  = double(id: '1', name: 'First')
+    second = double(id: '2', name: 'Second')
+    s = ActiveSetting::Setting.new
+    s.objects_from_collection([first, second], :name, :id)
+    s.options.should == [['First', '1'], ['Second', '2']]
   end
 end
