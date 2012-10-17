@@ -72,7 +72,7 @@ module ActiveSetting
     end
 
     def options
-      @options || (eval(setting.options) if setting && !setting.options.blank?)
+      @options #|| (eval(setting.options) if setting && !setting.options.blank?)
     end
 
     def self.convert_value(val, data_type)
@@ -87,13 +87,18 @@ module ActiveSetting
       end
     end
 
+    def raw_value=(new)
+      @value = nil
+      @raw_value = new
+    end
+
     def value
       v = raw_value || default
 
       # TODO: WHY IS the first line here
       return nil if v.nil?
 
-      case data_type
+      @value ||= case data_type
       when :array
         YAML::load(v)
       when :hash
