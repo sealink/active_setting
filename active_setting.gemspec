@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'active_setting'
   s.version           = '0.0.1'
-  s.date              = '2012-10-16'
+  s.date              = '2012-10-19'
   s.rubyforge_project = 'active_setting'
 
   ## Make sure your summary is short. The description may be as long
@@ -51,6 +51,7 @@ Gem::Specification.new do |s|
   ## List your development dependencies here. Development dependencies are
   ## those that are only needed during development
   # s.add_development_dependency('DEVDEPNAME', [">= 1.1.0", "< 2.0.0"])
+  s.add_development_dependency('rake')
   s.add_development_dependency('rspec')
   s.add_development_dependency('simplecov')
 

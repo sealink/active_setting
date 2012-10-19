@@ -17,8 +17,8 @@ if ENV['COVERAGE']
   SimpleCov.at_exit do
     SimpleCov.result.format!
     percent = SimpleCov.result.covered_percent
-    unless percent >= 85
-      puts "Coverage must be above 85%. It is #{"%.2f" % percent}%"
+    unless percent >= 90
+      puts "Coverage must be above 90%. It is #{"%.2f" % percent}%"
       Kernel.exit(1)
     end
   end
