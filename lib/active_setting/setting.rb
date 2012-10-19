@@ -2,7 +2,8 @@ require 'bigdecimal'
 
 module ActiveSetting
   class Setting # < ActiveRecord::Base
-    attr_accessor :name, :data_type, :subtype, :options, :description, :exists, :category, :raw_value, :default
+    attr_accessor :name, :description, :category, :raw_value, :default
+    attr_reader :data_type, :subtype, :options
 
     def initialize(attr = {})
       attr.each do |key,value|
@@ -41,20 +42,12 @@ module ActiveSetting
       @@registered_settings[@name.to_sym]
     end
 
-    def data_type
-      @data_type.to_sym if @data_type
+    def data_type=(data_type)
+      @data_type = data_type.to_sym if data_type
     end
 
-    def subtype
-      @subtype.to_sym if @subtype
-    end
-
-    def description
-      @description
-    end
-
-    def category
-      @category
+    def subtype=(subtype)
+      @subtype = subtype.to_sym if subtype
     end
 
     def options=(options)
@@ -64,27 +57,11 @@ module ActiveSetting
     def object_options=(oo)
       objects, key, value = oo.split(' ')
       value = key if value.nil? || value == ''
-      objects_from_collection(eval(objects), key, value)
+      @options = objects_from_collection(eval(objects), key, value)
     end
 
     def objects_from_collection(collection, key, value)
-      @options = collection.map{|o| [o.send(key), o.send(value)]}
-    end
-
-    def options
-      @options #|| (eval(setting.options) if setting && !setting.options.blank?)
-    end
-
-    def self.convert_value(val, data_type)
-      case data_type
-      when :boolean
-        true if ![nil, false, 'false', 0, '0'].include?(val)
-      when :integer then val.to_i
-      when :string then val.to_s
-      when :symbol then val.to_sym
-      when :decimal then BigDecimal(val)
-      else val
-      end
+      collection.map{|o| [o.send(key), o.send(value)]}
     end
 
     def raw_value=(new)
@@ -99,13 +76,11 @@ module ActiveSetting
       return nil if v.nil?
 
       @value ||= case data_type
-      when :array
-        YAML::load(v)
       when :hash
         chunks = v.split(',')
         chunks.inject({}) do |h, val|
-          key, subval = val.split(':')
-          h[key.strip.to_sym] = subval.strip
+          key, subval = val.split(':').map(&:strip)
+          h[key.to_sym] = subval
           h
         end
       when :csv
@@ -116,9 +91,15 @@ module ActiveSetting
       end
     end
 
-    #def value=(newval)
-    #  newval = newval.join(',') if data_type == 'csv' && newval.is_a?(Array)
-    #  self.raw_value = newval
-    #end
+    def self.convert_value(val, data_type)
+      case data_type
+      when :boolean then ![nil, false, 'false', 0, '0'].include?(val)
+      when :integer then val.to_i
+      when :string then val.to_s
+      when :symbol then val.to_sym
+      when :decimal then BigDecimal(val)
+      else val
+      end
+    end
   end
 end

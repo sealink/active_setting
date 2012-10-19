@@ -51,7 +51,6 @@ describe ActiveSetting::Setting, 'when having options' do
     first  = double(id: '1', name: 'First')
     second = double(id: '2', name: 'Second')
     s = ActiveSetting::Setting.new
-    s.objects_from_collection([first, second], :name, :id)
-    s.options.should == [['First', '1'], ['Second', '2']]
+    s.objects_from_collection([first, second], :name, :id).should == [['First', '1'], ['Second', '2']]
   end
 end
