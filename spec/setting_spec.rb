@@ -37,19 +37,19 @@ describe ActiveSetting::Setting, 'with types/casting' do
     s.value.should == [:first, :second]
 
     s = ActiveSetting::Setting.new(:data_type => :hash, :raw_value => 'a:1 , b : 2')
-    s.value.should == {a: '1', b: '2'}
+    s.value.should == {:a => '1', :b => '2'}
   end
 end
 
 describe ActiveSetting::Setting, 'when having options' do
   it 'should format the options in the right type' do
-    s = ActiveSetting::Setting.new(options: 'easy normal hard')
+    s = ActiveSetting::Setting.new(:options => 'easy normal hard')
     s.options.should == ['easy', 'normal', 'hard']
   end
 
   it 'should format the options by key,value when object options' do
-    first  = double(id: '1', name: 'First')
-    second = double(id: '2', name: 'Second')
+    first  = double(:id => '1', :name => 'First')
+    second = double(:id => '2', :name => 'Second')
     s = ActiveSetting::Setting.new
     s.objects_from_collection([first, second], :name, :id).should == [['First', '1'], ['Second', '2']]
   end

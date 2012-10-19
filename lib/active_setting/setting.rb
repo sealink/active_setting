@@ -7,8 +7,8 @@ module ActiveSetting
 
     def initialize(attr = {})
       attr.each do |key,value|
-        setter = (key.to_s + '=').to_sym
-        send(setter, value) if methods.include?(setter)
+        setter = "#{key}="
+        send(setter, value) if respond_to?(setter)
       end
     end
 
