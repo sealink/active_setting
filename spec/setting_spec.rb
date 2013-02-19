@@ -66,9 +66,9 @@ describe ActiveSetting::Setting, 'when having options' do
       end
     end
 
-    s = ActiveSetting::Setting.new(object_options: 'Model.all id name')
+    s = ActiveSetting::Setting.new(:object_options => 'Model.all id name')
     s.options.should == []
-    first = stub(id: 1, name: 'First')
+    first = double(:id => 1, :name => 'First')
     Model.objects = [first]
     s.options.should == [[1, 'First']]
   end
