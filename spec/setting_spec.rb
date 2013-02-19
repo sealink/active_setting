@@ -53,4 +53,23 @@ describe ActiveSetting::Setting, 'when having options' do
     s = ActiveSetting::Setting.new
     s.objects_from_collection([first, second], :name, :id).should == [['First', '1'], ['Second', '2']]
   end
+
+  it 'should not cache object options' do
+    class Model
+      attr_accessor :id, :name
+      @@objects = []
+      def self.all
+        @@objects
+      end
+      def self.objects=(objects)
+        @@objects = objects
+      end
+    end
+
+    s = ActiveSetting::Setting.new(object_options: 'Model.all id name')
+    s.options.should == []
+    first = stub(id: 1, name: 'First')
+    Model.objects = [first]
+    s.options.should == [[1, 'First']]
+  end
 end

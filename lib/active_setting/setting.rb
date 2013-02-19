@@ -50,14 +50,22 @@ module ActiveSetting
       @subtype = subtype.to_sym if subtype
     end
 
+    def options
+      @object_options ? calculate_object_options : @options
+    end
+
     def options=(options)
       @options = options.split(' ')
     end
 
     def object_options=(oo)
-      objects, key, value = oo.split(' ')
+      @object_options = oo
+    end
+
+    def calculate_object_options
+      objects, key, value = @object_options.split(' ')
       value = key if value.nil? || value == ''
-      @options = objects_from_collection(eval(objects), key, value)
+      objects_from_collection(eval(objects), key, value)
     end
 
     def objects_from_collection(collection, key, value)
