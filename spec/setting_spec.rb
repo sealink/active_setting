@@ -17,16 +17,16 @@ describe ActiveSetting::Setting, 'with types/casting' do
 
   it 'should handle boolean types' do
     s = ActiveSetting::Setting.new(:data_type => :boolean, :raw_value => '0')
-    s.value.should be_false
+    s.value.should be false
 
     s = ActiveSetting::Setting.new(:data_type => :boolean, :raw_value => 'false')
-    s.value.should be_false
+    s.value.should be false
 
     s = ActiveSetting::Setting.new(:data_type => :boolean, :raw_value => '1')
-    s.value.should be_true
+    s.value.should be true
 
     s = ActiveSetting::Setting.new(:data_type => :boolean, :raw_value => 'true')
-    s.value.should be_true
+    s.value.should be true
   end
 
   it 'should handle multi value types including subvalue types and handle spacing' do
