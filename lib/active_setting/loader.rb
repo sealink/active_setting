@@ -6,9 +6,9 @@ module ActiveSetting
       settings_config(filename).each do |category_name, settings|
         settings.each do |setting_name, values|
           Setting.register(setting_name.to_sym, values.merge(
-            :data_type => values['type'],
-            :category => category_name,
-            :name => setting_name
+            data_type: values['type'],
+            category:  category_name,
+            name:      setting_name
           ))
         end
       end
