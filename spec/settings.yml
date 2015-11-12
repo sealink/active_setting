@@ -7,3 +7,10 @@ settings:
       description: The minimum percentage to pass
     difficulty:
       options: 'easy normal hard'
+    product_ids:
+      type: csv
+      subtype: integer
+      default: '1,2,3'
+    testing:
+      type: boolean
+      default: 'true'

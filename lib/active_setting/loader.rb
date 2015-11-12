@@ -14,6 +14,19 @@ module ActiveSetting
       end
     end
 
+    def self.build_hash(filename = self.config_filename)
+      settings_config(filename).map.with_object({}) do |(category_name, settings), hash|
+        settings.each do |setting_name, values|
+          attrs = values.merge(
+            data_type: values['type'],
+            category:  category_name,
+            name:      setting_name.to_sym
+          )
+          hash[setting_name.to_sym] = Setting.new(attrs)
+        end
+      end
+    end
+
     def self.config_filename
       @@config_filename || "settings.yml"
     end
