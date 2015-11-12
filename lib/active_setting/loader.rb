@@ -1,3 +1,5 @@
+require 'yaml'
+
 module ActiveSetting
   class Loader
     def self.load_settings(filename = self.config_filename)
