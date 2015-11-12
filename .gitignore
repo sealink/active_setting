@@ -1,1 +1,22 @@
+Gemfile.lock
+
+# tests
 coverage
+
+# Bundler related
+/vendor/bundle
+/vendor/ruby
+/bundle
+/.bundle
+
+# other
+/.redcar
+/nbproject
+/.project
+/.idea
+/.eclipse
+*.sublime-project
+*.sublime-workspace
+
+# Mac specific directory information
+*.DS_Store
