@@ -52,7 +52,7 @@ Gem::Specification.new do |s|
   ## those that are only needed during development
   # s.add_development_dependency('DEVDEPNAME', [">= 1.1.0", "< 2.0.0"])
   s.add_development_dependency('rake')
-  s.add_development_dependency('rspec')
+  s.add_development_dependency('rspec', '~> 3.4')
   s.add_development_dependency('simplecov')
 
   ## Leave this section as-is. It will be automatically generated from the
