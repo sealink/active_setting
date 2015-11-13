@@ -5,41 +5,40 @@ module ActiveSetting
     attr_accessor :name, :description, :category, :raw_value, :default
     attr_reader :data_type, :subtype, :options
 
+    def self.registered_settings
+      @registered_settings ||= {}
+    end
+
     def initialize(attr = {})
-      attr.each do |key,value|
+      attr.each do |key, value|
         setter = "#{key}="
         send(setter, value) if respond_to?(setter)
       end
     end
 
     def self.register(name, options)
-      self.new(options.merge(:name => name)).register
+      new(options.merge(name: name)).register
     end
 
     def register
-      @@registered_settings ||= {}
-      @@registered_settings[name.to_sym] = self
+      self.class.registered_settings[name.to_sym] = self
       Setting.define_shortcut_method(self)
       self
     end
 
     def self.define_shortcut_method(setting)
-      class_eval <<-TEXT 
+      class_eval <<-TEXT
         def self.#{setting.name}
-          @@registered_settings[:#{setting.name}].value
+          self.class.registered_settings[:#{setting.name}].value
         end
         def self.#{setting.name}=(value)
-          @@registered_settings[:#{setting.name}].raw_value = value
+          self.class.registered_settings[:#{setting.name}].raw_value = value
         end
       TEXT
     end
 
-    def self.registered_settings
-      @@registered_settings
-    end
-
     def setting
-      @@registered_settings[@name.to_sym]
+      self.class.registered_settings[@name.to_sym]
     end
 
     def data_type=(data_type)
@@ -58,9 +57,7 @@ module ActiveSetting
       @options = options.split(' ')
     end
 
-    def object_options=(oo)
-      @object_options = oo
-    end
+    attr_writer :object_options
 
     def calculate_object_options
       objects, key, value = @object_options.split(' ')
@@ -69,7 +66,7 @@ module ActiveSetting
     end
 
     def objects_from_collection(collection, key, value)
-      collection.map{|o| [o.send(key), o.send(value)]}
+      collection.map { |o| [o.send(key), o.send(value)] }
     end
 
     def raw_value=(new)
@@ -83,20 +80,7 @@ module ActiveSetting
       # TODO: WHY IS the first line here
       return nil if v.nil?
 
-      @value ||= case data_type
-      when :hash
-        chunks = v.split(',')
-        chunks.inject({}) do |h, val|
-          key, subval = val.split(':').map(&:strip)
-          h[key.to_sym] = subval
-          h
-        end
-      when :csv
-        return v if v.empty? # e.g. default = []
-        v.split(',').map(&:strip).map{|e| Setting.convert_value(e, subtype) }
-      else
-        Setting.convert_value(v, data_type)
-      end
+      @value ||= build_value(v)
     end
 
     def self.convert_value(val, data_type)
@@ -108,6 +92,32 @@ module ActiveSetting
       when :decimal then BigDecimal(val)
       else val
       end
+    end
+
+    private
+
+    def build_value(v)
+      case data_type
+      when :hash
+        hash_value(v)
+      when :csv
+        csv_value(v)
+      else
+        Setting.convert_value(v, data_type)
+      end
+    end
+
+    def hash_value(v)
+      chunks = v.split(',')
+      chunks.map.with_object({}) do |val, h|
+        key, subval   = val.split(':').map(&:strip)
+        h[key.to_sym] = subval
+      end
+    end
+
+    def csv_value(v)
+      return v if v.empty? # e.g. default = []
+      v.split(',').map(&:strip).map { |e| Setting.convert_value(e, subtype) }
     end
   end
 end
