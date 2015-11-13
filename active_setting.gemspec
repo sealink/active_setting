@@ -54,6 +54,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rake')
   s.add_development_dependency('rspec', '~> 3.4')
   s.add_development_dependency('simplecov')
+  s.add_development_dependency('rubocop')
 
   ## Leave this section as-is. It will be automatically generated from the
   ## contents of your Git repository via the gemspec task. DO NOT REMOVE
