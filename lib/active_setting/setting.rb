@@ -59,9 +59,14 @@ module ActiveSetting
 
     attr_writer :object_options
 
+    # <b>DEPRECATED:</b> Please use standard options instead.
     def calculate_object_options
+      puts '[WARNING] ActiveSetting::Setting#object_options is deprecated'\
+        ' as it poses a serious security risk and will be removed in future versions'
+
       objects, key, value = @object_options.split(' ')
       value = key if value.nil? || value == ''
+      # TODO: Remove this method, as it uses eval !!!
       objects_from_collection(eval(objects), key, value)
     end
 
