@@ -41,7 +41,16 @@ module ActiveSetting
         fail FileNotFound, "#{config_filename} is required for settings"
       end
       yaml = YAML.load(File.read(config_filename))
-      yaml['settings']
+      yaml['settings'].merge(external_settings)
+    end
+
+    def self.external_settings
+      @external_settings ||= {}
+    end
+
+    def self.register_external_setting(name, attrs)
+      category ||= external_settings[attrs.fetch(:category, 'External')] ||= {}
+      category[name] = attrs.stringify_keys
     end
   end
 end
