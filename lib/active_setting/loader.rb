@@ -2,8 +2,42 @@ require 'yaml'
 
 module ActiveSetting
   class Loader
-    def self.load_settings(filename = config_filename)
-      settings_config(filename).each do |category_name, settings|
+
+    class << self
+      def load_settings(filename = nil)
+        new(filename).load_settings
+      end
+
+      def build_hash(filename = nil)
+        new(filename).build_hash
+      end
+
+      def config_filename
+        @config_filename || 'settings.yml'
+      end
+
+      attr_writer :config_filename
+
+      def external_settings
+        @external_settings ||= {}
+      end
+
+      def register_external_setting(name, attrs)
+        category ||= external_settings[attrs.fetch(:category, 'External')] ||= {}
+        category[name] = attrs.stringify_keys
+      end
+    end
+
+    def initialize(config_filename = nil)
+      @config_filename = config_filename
+    end
+
+    def config_filename
+      @config_filename || self.class.config_filename
+    end
+
+    def load_settings
+      settings_config.each do |category_name, settings|
         settings.each do |setting_name, values|
           attrs = values.merge(
             data_type: values['type'],
@@ -15,8 +49,8 @@ module ActiveSetting
       end
     end
 
-    def self.build_hash(filename = config_filename)
-      settings_config(filename).map.with_object({}) do |(category_name, settings), hash|
+    def build_hash
+      settings_config.map.with_object({}) do |(category_name, settings), hash|
         settings.each do |setting_name, values|
           attrs = values.merge(
             data_type: values['type'],
@@ -28,29 +62,24 @@ module ActiveSetting
       end
     end
 
-    def self.config_filename
-      @config_filename || 'settings.yml'
+    private
+
+    def settings_config
+      @settings_config ||= settings_from_file.merge(external_settings)
     end
 
-    class << self
-      attr_writer :config_filename
+    def external_settings
+      self.class.external_settings
     end
 
-    def self.settings_config(config_filename)
+    def settings_from_file
+      return @settings_from_file unless @settings_from_file.nil?
+
       unless File.exist? config_filename
-        fail FileNotFound, "#{config_filename} is required for settings"
+        fail ArgumentError, "#{config_filename} is required for settings"
       end
       yaml = YAML.load(File.read(config_filename))
-      yaml['settings'].merge(external_settings)
-    end
-
-    def self.external_settings
-      @external_settings ||= {}
-    end
-
-    def self.register_external_setting(name, attrs)
-      category ||= external_settings[attrs.fetch(:category, 'External')] ||= {}
-      category[name] = attrs.stringify_keys
+      @settings_from_file = yaml.fetch('settings')
     end
   end
 end
