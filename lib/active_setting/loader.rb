@@ -2,7 +2,6 @@ require 'yaml'
 
 module ActiveSetting
   class Loader
-
     class << self
       def load_settings(filename = nil)
         new(filename).load_settings
