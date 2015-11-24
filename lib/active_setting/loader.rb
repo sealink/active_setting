@@ -24,7 +24,7 @@ module ActiveSetting
 
       def register_external_setting(name, attrs)
         category ||= external_settings[attrs.fetch(:category, 'External')] ||= {}
-        category[name] = attrs.stringify_keys
+        category[name] = attrs.map.with_object({}) { |(k,v), hash| hash[k.to_s] = v }
       end
     end
 
