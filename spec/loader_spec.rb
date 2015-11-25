@@ -52,5 +52,22 @@ describe ActiveSetting::Loader do
       specify { expect(setting.data_type).to eq :boolean }
       specify { expect(setting.value).to eq true }
     end
+
+    context 'when external settings are defined' do
+      before do
+        ActiveSetting::Loader.register_external_setting(
+          :externally_defined,
+          type:    'string',
+          default: 'external setting'
+        )
+      end
+
+      let(:setting) { hash[:externally_defined] }
+      specify { expect(setting).to be_a ActiveSetting::Setting }
+      specify { expect(setting.name).to eq :externally_defined }
+      specify { expect(setting.category).to eq 'External' }
+      specify { expect(setting.data_type).to eq :string }
+      specify { expect(setting.value).to eq 'external setting' }
+    end
   end
 end
