@@ -7,24 +7,7 @@
 
 require 'rubygems'
 require 'bundler/setup'
-
-MINIMUM_COVERAGE = 90
-
-if ENV['COVERAGE']
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter '/spec/'
-    add_group 'lib', 'lib'
-  end
-  SimpleCov.at_exit do
-    SimpleCov.result.format!
-    percent = SimpleCov.result.covered_percent
-    unless percent >= 90
-      puts "Coverage must be above #{MINIMUM_COVERAGE}%. It is #{format('%.2f', percent)}%"
-      Kernel.exit(1)
-    end
-  end
-end
+require 'support/coverage_loader'
 
 require 'active_setting'
 
