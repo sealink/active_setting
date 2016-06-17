@@ -1,7 +1,11 @@
 # coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'active_setting/version'
+
 Gem::Specification.new do |spec|
   spec.name          = 'active_setting'
-  spec.version       = '0.0.1'
+  spec.version       = ActiveSetting::VERSION
   spec.authors       = ["Michael Noack"]
   spec.email         = 'support@travellink.com.au'
   spec.description   = "See README for full details on how to install, use, etc."
