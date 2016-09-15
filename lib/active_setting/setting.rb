@@ -80,7 +80,8 @@ module ActiveSetting
     end
 
     def value
-      v = raw_value || default
+      v = raw_value
+      v = default if raw_value.nil?
 
       # TODO: WHY IS the first line here
       return nil if v.nil?

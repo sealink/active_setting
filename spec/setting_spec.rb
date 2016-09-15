@@ -40,6 +40,11 @@ describe ActiveSetting::Setting, 'with types/casting' do
       it { is_expected.to be false }
     end
 
+    context 'when boolean false' do
+      let(:raw_value) { false }
+      it { is_expected.to be false }
+    end
+
     context 'when 1' do
       let(:raw_value) { '1' }
       it { is_expected.to be true }
@@ -47,6 +52,11 @@ describe ActiveSetting::Setting, 'with types/casting' do
 
     context 'when true' do
       let(:raw_value) { 'true' }
+      it { is_expected.to be true }
+    end
+
+    context 'when boolean true' do
+      let(:raw_value) { true }
       it { is_expected.to be true }
     end
   end
