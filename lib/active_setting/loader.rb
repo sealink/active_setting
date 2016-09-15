@@ -38,6 +38,7 @@ module ActiveSetting
     def load_settings
       settings_config.each do |category_name, settings|
         settings.each do |setting_name, values|
+          values ||= {}
           attrs = values.merge(
             data_type: values['type'],
             category:  category_name,
@@ -51,6 +52,7 @@ module ActiveSetting
     def build_hash
       settings_config.map.with_object({}) do |(category_name, settings), hash|
         settings.each do |setting_name, values|
+          values ||= {}
           attrs = values.merge(
             data_type: values['type'],
             category:  category_name,

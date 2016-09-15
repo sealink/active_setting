@@ -1,6 +1,7 @@
 ---
 settings:
   general_category:
+    minimalist:
     maximum_percent:
       default: 50
       type: integer
