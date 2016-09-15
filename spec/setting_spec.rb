@@ -1,80 +1,104 @@
 require 'spec_helper'
 
 describe ActiveSetting::Setting, 'with types/casting' do
-  it 'should handle basic types and casting' do
-    s = ActiveSetting::Setting.new(data_type: :integer, raw_value: '6')
-    s.value.should eq 6
+  subject { ActiveSetting::Setting.new(data_type: data_type, raw_value: raw_value).value }
 
-    s = ActiveSetting::Setting.new(data_type: :decimal, raw_value: '7.6')
-    s.value.should eq 7.6
-
-    s = ActiveSetting::Setting.new(data_type: :symbol, raw_value: 'hello')
-    s.value.should eq :hello
-
-    s = ActiveSetting::Setting.new(raw_value: 'hello')
-    s.value.should eq 'hello'
+  context 'when integer 6' do
+    let(:data_type) { :integer }
+    let(:raw_value) { '6' }
+    it { is_expected.to eq 6 }
   end
 
-  it 'should handle boolean types' do
-    s = ActiveSetting::Setting.new(data_type: :boolean, raw_value: '0')
-    s.value.should be false
-
-    s = ActiveSetting::Setting.new(data_type: :boolean, raw_value: 'false')
-    s.value.should be false
-
-    s = ActiveSetting::Setting.new(data_type: :boolean, raw_value: '1')
-    s.value.should be true
-
-    s = ActiveSetting::Setting.new(data_type: :boolean, raw_value: 'true')
-    s.value.should be true
+  context 'when decimal 7.6' do
+    let(:data_type) { :decimal }
+    let(:raw_value) { '7.6' }
+    it { is_expected.to eq 7.6 }
   end
 
-  it 'should handle multi value types including subvalue types and handle spacing' do
-    s = ActiveSetting::Setting.new(data_type: :csv, subtype: :integer, raw_value: '1,2,3')
-    s.value.should eq [1, 2, 3]
+  context 'when symbol hello' do
+    let(:data_type) { :symbol }
+    let(:raw_value) { 'hello' }
+    it { is_expected.to eq :hello }
+  end
 
-    s = ActiveSetting::Setting.new(data_type: :csv, subtype: :symbol, raw_value: 'first, second')
-    s.value.should eq [:first, :second]
+  context 'when unspecified hello' do
+    let(:data_type) { nil }
+    let(:raw_value) { 'hello' }
+    it { is_expected.to eq 'hello' }
+  end
 
-    s = ActiveSetting::Setting.new(data_type: :hash, raw_value: 'a:1 , b : 2')
-    s.value.should eq(a: '1', b: '2')
+  context 'when boolean' do
+    let(:data_type) { :boolean }
+
+    context 'when 0' do
+      let(:raw_value) { '0' }
+      it { is_expected.to be false }
+    end
+
+    context 'when false' do
+      let(:raw_value) { 'false' }
+      it { is_expected.to be false }
+    end
+
+    context 'when 1' do
+      let(:raw_value) { '1' }
+      it { is_expected.to be true }
+    end
+
+    context 'when true' do
+      let(:raw_value) { 'true' }
+      it { is_expected.to be true }
+    end
+  end
+
+  context 'when csv' do
+    subject { ActiveSetting::Setting.new(data_type: data_type, subtype: subtype, raw_value: raw_value).value }
+    let(:data_type) { :csv }
+    context 'when array of integers' do
+      let(:subtype) { :integer }
+      let(:raw_value) { '1,2,3' }
+      it { is_expected.to eq [1, 2, 3] }
+    end
+
+    context 'when array of symbols' do
+      let(:subtype) { :symbol }
+      let(:raw_value) { 'first, second' } # deliberate spacing
+      it { is_expected.to eq [:first, :second] }
+    end
+  end
+
+  context 'when hash' do
+    let(:data_type) { :hash }
+    let(:raw_value) { 'a:1 , b : 2' } # deliberate spacing
+    it { is_expected.to eq(a: '1', b: '2') }
   end
 end
 
 describe ActiveSetting::Setting, 'when having options' do
-  it 'should format the options in the right type' do
-    s = ActiveSetting::Setting.new(options: 'easy normal hard')
-    s.options.should eq %w(easy normal hard)
+  context 'with regular options' do
+    subject { ActiveSetting::Setting.new(options: 'easy normal hard').options }
+    it { is_expected.to eq %w(easy normal hard) }
   end
 
-  it 'should format the options by key,value when object options' do
-    first  = double(id: '1', name: 'First')
-    second = double(id: '2', name: 'Second')
-    s = ActiveSetting::Setting.new
-    s.objects_from_collection([first, second], :name, :id).should eq [%w(First 1), %w(Second 2)]
+  context 'calculating objects from collection' do
+    let(:first) { double(id: '1', name: 'First') }
+    let(:second) { double(id: '2', name: 'Second') }
+    subject { ActiveSetting::Setting.new.objects_from_collection([first, second], :name, :id) }
+    it { is_expected.to eq [%w(First 1), %w(Second 2)] }
   end
 
-  it 'should not cache object options' do
-    class Model
-      attr_accessor :id, :name
-
-      def self.objects
-        @objects ||= []
-      end
-
-      def self.all
-        objects
-      end
-
-      class << self
-        attr_writer :objects
-      end
+  context 'with object options' do
+    before do
+      stub_const 'Model', double(all: objects)
     end
 
-    s = ActiveSetting::Setting.new(object_options: 'Model.all id name')
-    s.options.should eq []
-    first = double(id: 1, name: 'First')
-    Model.objects = [first]
-    s.options.should eq [[1, 'First']]
+    subject { ActiveSetting::Setting.new(object_options: 'Model.all id name').options }
+    let(:objects) { [] }
+    it { is_expected.to eq [] }
+
+    context 'when objects exist' do
+      let(:objects) { [double(id: 1, name: 'First')] }
+      it { is_expected.to eq [[1, 'First']] }
+    end
   end
 end

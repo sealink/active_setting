@@ -6,7 +6,7 @@ describe ActiveSetting::Loader do
   it 'should parse a settings file to get settings' do
     ActiveSetting::Loader.load_settings(config_filename)
     settings = ActiveSetting::Setting.registered_settings
-    settings.keys.should include :maximum_percent
+    expect(settings.keys).to include :maximum_percent
   end
 
   context 'when building a settings hash from the settings file' do
