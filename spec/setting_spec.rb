@@ -62,12 +62,17 @@ describe ActiveSetting::Setting, 'with types/casting' do
   end
 
   context 'when csv' do
-    subject { ActiveSetting::Setting.new(data_type: data_type, subtype: subtype, raw_value: raw_value).value }
+    subject { ActiveSetting::Setting.new(default: [], data_type: data_type, subtype: subtype, raw_value: raw_value).value }
     let(:data_type) { :csv }
     context 'when array of integers' do
       let(:subtype) { :integer }
       let(:raw_value) { '1,2,3' }
       it { is_expected.to eq [1, 2, 3] }
+
+      context 'when no value, so default' do
+        let(:raw_value) { nil }
+        it { is_expected.to eq [] }
+      end
     end
 
     context 'when array of symbols' do
