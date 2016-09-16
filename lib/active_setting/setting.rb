@@ -123,7 +123,7 @@ module ActiveSetting
 
     def csv_value(v)
       return v if v.is_a?(Array) # e.g. default = []
-      v.split(',').map(&:strip).map { |e| Setting.convert_value(e, subtype) }
+      v.to_s.split(',').map(&:strip).map { |e| Setting.convert_value(e, subtype) }
     end
   end
 end

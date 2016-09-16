@@ -69,6 +69,11 @@ describe ActiveSetting::Setting, 'with types/casting' do
       let(:raw_value) { '1,2,3' }
       it { is_expected.to eq [1, 2, 3] }
 
+      context 'when raw value is type cast' do
+        let(:raw_value) { 1 }
+        it { is_expected.to eq [1] }
+      end
+
       context 'when no value, so default' do
         let(:raw_value) { nil }
         it { is_expected.to eq [] }
