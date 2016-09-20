@@ -80,7 +80,8 @@ module ActiveSetting
     end
 
     def value
-      v = raw_value || default
+      v = raw_value
+      v = default if raw_value.nil?
 
       # TODO: WHY IS the first line here
       return nil if v.nil?
@@ -121,8 +122,8 @@ module ActiveSetting
     end
 
     def csv_value(v)
-      return v if v.empty? # e.g. default = []
-      v.split(',').map(&:strip).map { |e| Setting.convert_value(e, subtype) }
+      return v if v.is_a?(Array) # e.g. default = []
+      v.to_s.split(',').map(&:strip).map { |e| Setting.convert_value(e, subtype) }
     end
   end
 end

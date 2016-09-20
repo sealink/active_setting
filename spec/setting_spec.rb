@@ -40,6 +40,11 @@ describe ActiveSetting::Setting, 'with types/casting' do
       it { is_expected.to be false }
     end
 
+    context 'when boolean false' do
+      let(:raw_value) { false }
+      it { is_expected.to be false }
+    end
+
     context 'when 1' do
       let(:raw_value) { '1' }
       it { is_expected.to be true }
@@ -49,15 +54,36 @@ describe ActiveSetting::Setting, 'with types/casting' do
       let(:raw_value) { 'true' }
       it { is_expected.to be true }
     end
+
+    context 'when boolean true' do
+      let(:raw_value) { true }
+      it { is_expected.to be true }
+    end
   end
 
   context 'when csv' do
-    subject { ActiveSetting::Setting.new(data_type: data_type, subtype: subtype, raw_value: raw_value).value }
+    subject { ActiveSetting::Setting.new(default: default, data_type: data_type, subtype: subtype, raw_value: raw_value).value }
+    let(:default) { [] }
     let(:data_type) { :csv }
     context 'when array of integers' do
       let(:subtype) { :integer }
       let(:raw_value) { '1,2,3' }
       it { is_expected.to eq [1, 2, 3] }
+
+      context 'when raw value is type cast' do
+        let(:raw_value) { 1 }
+        it { is_expected.to eq [1] }
+      end
+
+      context 'when no value, so default' do
+        let(:raw_value) { nil }
+        it { is_expected.to eq [] }
+
+        context 'when default a non empty array' do
+          let(:default) { [1, 2] }
+          it { is_expected.to eq [1, 2] }
+        end
+      end
     end
 
     context 'when array of symbols' do
