@@ -3,6 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/active_setting.svg)](http://badge.fury.io/rb/active_setting)
 [![Build Status](https://github.com/sealink/active_setting/workflows/Build%20and%20Test/badge.svg?branch=master)](https://github.com/sealink/active_setting/actions)
 [![Build Status](https://codeclimate.com/github/sealink/active_setting.png)](https://codeclimate.com/github/sealink/active_setting)
+[![Coverage Status](https://coveralls.io/repos/sealink/active_setting/badge.png)](https://coveralls.io/r/sealink/active_setting)
 
 # DESCRIPTION
 
